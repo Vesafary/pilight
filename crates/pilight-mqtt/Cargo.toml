@@ -1,0 +1,35 @@
+[package]
+name = "pilight-mqtt"
+description = "Home Assistant MQTT bridge for pilight"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+
+[features]
+default = []
+# TLS to the broker. Off by default because rustls needs a C toolchain, which
+# makes cross-compiling for a Pi considerably more annoying.
+tls = ["rumqttc/use-rustls"]
+
+[dependencies]
+pilight-proto = { workspace = true, default-features = false }
+pilight-db = { workspace = true }
+pilight-service = { workspace = true }
+
+rumqttc = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+chrono = { workspace = true }
+diesel = { workspace = true }
+diesel-async = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }
+
+[lints]
+workspace = true

@@ -1,0 +1,27 @@
+[package]
+name = "pilight-db"
+description = "Postgres persistence for pilight: lamps, their types and their state"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+
+[dependencies]
+pilight-proto = { workspace = true, features = ["serde"] }
+
+diesel = { workspace = true }
+diesel-async = { workspace = true }
+diesel_migrations = { workspace = true }
+deadpool = { workspace = true }
+
+async-trait = { workspace = true }
+chrono = { workspace = true }
+serde = { workspace = true }
+thiserror = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }
+
+[lints]
+workspace = true

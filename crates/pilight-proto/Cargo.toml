@@ -1,0 +1,38 @@
+[package]
+name = "pilight-proto"
+description = "MiLight/LimitlessLED 2.4GHz protocol and nRF24L01+ driver"
+keywords = ["milight", "limitlessled", "nrf24l01", "raspberry-pi", "rf"]
+categories = ["embedded", "hardware-support"]
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+
+[features]
+default = ["nrf24"]
+# Hardware backend: Raspberry Pi SPI/GPIO driving an nRF24L01+.
+nrf24 = ["dep:rppal", "dep:embedded-nrf24l01", "dep:embedded-hal-0-2"]
+# Serialize/deserialize RemoteType, for the database and HTTP layers.
+serde = ["dep:serde"]
+
+[dependencies]
+rppal = { version = "0.22", features = ["hal"], optional = true }
+embedded-nrf24l01 = { version = "0.2", optional = true }
+# embedded-nrf24l01 0.2 is built on embedded-hal 0.2, which is also what rppal
+# exposes via its `hal` feature. Renamed so the old major is unambiguous.
+embedded-hal-0-2 = { package = "embedded-hal", version = "0.2", optional = true }
+serde = { workspace = true, optional = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+
+[lints]
+workspace = true
+
+[[example]]
+name = "lamp"
+required-features = ["nrf24"]
+
+[[example]]
+name = "radio-check"
+required-features = ["nrf24"]

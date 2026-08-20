@@ -1,0 +1,47 @@
+# Development and test services: Postgres, and a Mosquitto broker.
+#
+#   docker compose up -d
+#   export DATABASE_URL=postgres://pilight:pilight@localhost:55432/pilight
+#   export PILIGHT_TEST_DATABASE_URL=postgres://pilight:pilight@localhost:55432/pilight_test
+#   export PILIGHT_TEST_MQTT_HOST=localhost PILIGHT_TEST_MQTT_PORT=51883
+#
+# The mosquitto service is a local broker for development. Point pilightd at Home
+# Assistant's own broker in anger — HA's Mosquitto add-on, usually.
+#
+# The test suite truncates between tests, so keep the test database separate from
+# anything you care about.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pilight
+      POSTGRES_PASSWORD: pilight
+      POSTGRES_DB: pilight
+    ports:
+      # Override with PILIGHT_PG_PORT if 55432 is taken.
+      - "${PILIGHT_PG_PORT:-55432}:5432"
+    volumes:
+      - pilight-pgdata:/var/lib/postgresql/data
+      - ./scripts/create-test-db.sql:/docker-entrypoint-initdb.d/10-create-test-db.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pilight -d pilight"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    command: >
+      sh -c "printf 'listener 1883\nallow_anonymous true\npersistence true\npersistence_location /mosquitto/data/\n'
+      > /mosquitto/config/mosquitto.conf && exec mosquitto -c /mosquitto/config/mosquitto.conf"
+    ports:
+      - "${PILIGHT_MQTT_PORT_HOST:-51883}:1883"
+    volumes:
+      - pilight-mosquitto:/mosquitto/data
+
+volumes:
+  pilight-pgdata:
+  pilight-mosquitto:

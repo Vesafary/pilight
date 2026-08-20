@@ -1,0 +1,30 @@
+# Cross-compiling for the Raspberry Pi.
+#
+# Nothing in this workspace links C — no libpq, no OpenSSL, no ring — so a full
+# cross-toolchain is unnecessary. Rust's bundled `rust-lld` and the musl target's
+# self-contained libc are enough:
+#
+#   rustup target add aarch64-unknown-linux-musl
+#   cargo build --release --target aarch64-unknown-linux-musl
+#
+# That produces a statically linked binary with no runtime dependencies at all —
+# scp it to the Pi and run it.
+#
+# Caveat: musl has no NSS, so it cannot resolve `.local` (mDNS) hostnames. If you
+# need to reach the broker as `homeassistant.local` rather than by IP, either add
+# an /etc/hosts entry on the Pi, or build against glibc instead:
+#
+#   sudo pacman -S aarch64-linux-gnu-gcc
+#   cargo build --release --target aarch64-unknown-linux-gnu
+#
+# Raspberry Pi OS Lite 64-bit is aarch64. For the 32-bit image, the target is
+# armv7-unknown-linux-musleabihf.
+
+[target.aarch64-unknown-linux-musl]
+linker = "rust-lld"
+
+[target.armv7-unknown-linux-musleabihf]
+linker = "rust-lld"
+
+[target.aarch64-unknown-linux-gnu]
+linker = "aarch64-linux-gnu-gcc"

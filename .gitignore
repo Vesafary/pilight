@@ -1,0 +1,5 @@
+/target
+
+# Agent/editor scratch state, in case it is not covered by a global ignore.
+.omc/
+.claude/

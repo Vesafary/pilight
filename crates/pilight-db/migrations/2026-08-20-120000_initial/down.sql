@@ -1,0 +1,5 @@
+DROP TABLE IF EXISTS lamp_commands;
+DROP TABLE IF EXISTS lamp_states;
+DROP TABLE IF EXISTS lamps;
+DROP TABLE IF EXISTS lamp_types;
+DROP FUNCTION IF EXISTS set_updated_at();

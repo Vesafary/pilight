@@ -1,0 +1,30 @@
+[package]
+name = "pilightd"
+description = "The pilight daemon: MQTT bridge for Home Assistant"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+
+[features]
+default = ["nrf24"]
+# Drive a real nRF24L01+. Without it the daemon runs with a radio that discards
+# everything, which is useful for testing the Home Assistant side on a laptop.
+nrf24 = ["pilight-proto/nrf24"]
+# TLS to the MQTT broker.
+tls = ["pilight-mqtt/tls"]
+
+[dependencies]
+pilight-proto = { workspace = true }
+pilight-db = { workspace = true }
+pilight-service = { workspace = true }
+pilight-mqtt = { workspace = true }
+pilight-api = { workspace = true }
+
+axum = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "net", "signal", "time"] }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+[lints]
+workspace = true

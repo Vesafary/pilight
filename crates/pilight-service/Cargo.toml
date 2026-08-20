@@ -1,0 +1,23 @@
+[package]
+name = "pilight-service"
+description = "Binds the pilight radio to its database: apply an intent, record what happened"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+
+[dependencies]
+pilight-proto = { workspace = true, default-features = false }
+pilight-db = { workspace = true }
+
+async-trait = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }
+
+[lints]
+workspace = true

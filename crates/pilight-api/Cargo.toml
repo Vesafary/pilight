@@ -1,0 +1,32 @@
+[package]
+name = "pilight-api"
+description = "HTTP API for pilight: register lamps and drive them directly"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+
+[dependencies]
+pilight-proto = { workspace = true, default-features = false }
+pilight-db = { workspace = true }
+pilight-service = { workspace = true }
+
+axum = { workspace = true }
+chrono = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true }
+tower-http = { workspace = true }
+tracing = { workspace = true }
+uuid = { workspace = true }
+
+[dev-dependencies]
+diesel = { workspace = true }
+diesel-async = { workspace = true }
+http-body-util = "0.1"
+tokio = { workspace = true, features = ["macros", "rt-multi-thread", "time"] }
+tower = { workspace = true, features = ["util"] }
+
+[lints]
+workspace = true

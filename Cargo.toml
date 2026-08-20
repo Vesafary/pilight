@@ -1,8 +1,50 @@
-[package]
-name = "pilight"
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
+rust-version = "1.85"
+repository = "https://github.com/vesafary/pilight"
+# license = "MIT OR Apache-2.0"   # TODO: pick one; needed before `cargo publish`
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[workspace.dependencies]
+# The db crate needs the domain types, not the radio; the server will opt back in.
+pilight-proto = { path = "crates/pilight-proto", default-features = false }
+pilight-db = { path = "crates/pilight-db" }
+pilight-service = { path = "crates/pilight-service" }
+pilight-mqtt = { path = "crates/pilight-mqtt" }
+pilight-api = { path = "crates/pilight-api" }
+serde_json = "1"
+# No TLS by default: HA's broker is normally plain 1883 on the LAN, and rustls
+# drags in aws-lc-sys/ring, which needs a C toolchain to cross-compile for a Pi.
+# Opt back in with pilight-mqtt's `tls` feature.
+rumqttc = { version = "0.25", default-features = false }
+axum = "0.8"
+tower = "0.5"
+tower-http = { version = "0.7", features = ["trace", "normalize-path"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 
-[dependencies]
+# Persistence
+# `postgres_backend`, not `postgres`: diesel-async talks to Postgres over pure-Rust
+# tokio-postgres, so we never link libpq. Nothing to install on the Pi.
+diesel = { version = "2.3", default-features = false, features = ["postgres_backend", "uuid", "chrono"] }
+diesel-async = { version = "0.9", features = ["postgres", "deadpool", "migrations"] }
+diesel_migrations = { version = "2.3" }
+deadpool = "0.12"
+
+# Shared
+async-trait = "0.1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "serde", "std"] }
+serde = { version = "1", features = ["derive"] }
+thiserror = "2"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync"] }
+uuid = { version = "1", features = ["serde", "v4"] }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }

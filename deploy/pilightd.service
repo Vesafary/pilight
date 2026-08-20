@@ -1,0 +1,46 @@
+# Install to /etc/systemd/system/pilightd.service
+#
+#   sudo install -m 0755 pilightd /usr/local/bin/pilightd
+#   sudo install -d -m 0750 /etc/pilight
+#   sudo install -m 0640 pilightd.env.example /etc/pilight/pilightd.env
+#   sudo systemctl daemon-reload && sudo systemctl enable --now pilightd
+
+[Unit]
+Description=pilight — MiLight bulb driver
+Documentation=https://github.com/vesafary/pilight
+# The daemon runs migrations at startup, so it needs the database up first.
+After=network-online.target postgresql.service
+Wants=network-online.target
+Requires=postgresql.service
+
+# The broker or the database may not be ready at the same moment we are; failing
+# and being restarted is the intended behaviour, but do not spin forever.
+# These belong in [Unit] — systemd silently ignores them under [Service].
+StartLimitIntervalSec=300
+StartLimitBurst=10
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/pilightd
+EnvironmentFile=/etc/pilight/pilightd.env
+
+# Needs `spi` for /dev/spidev0.0 and `gpio` for the CE pin.
+User=pilight
+Group=pilight
+SupplementaryGroups=spi gpio
+
+Restart=on-failure
+RestartSec=5s
+
+# Modest hardening. Deliberately NOT PrivateDevices=yes or ProtectSystem=strict:
+# both hide /dev/spidev0.0 and /dev/gpiomem, and the radio then fails in a way
+# that looks like a wiring fault.
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+
+[Install]
+WantedBy=multi-user.target
